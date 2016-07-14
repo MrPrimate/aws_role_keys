@@ -24,8 +24,6 @@ default:
     region: (optional)
 profiles:
   - name:
-    id:
-    key:
     role_arn:
     region: (optional)
     default: default profile to use
