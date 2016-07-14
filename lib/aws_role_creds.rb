@@ -9,7 +9,8 @@ module AwsRoleCreds
     
     IN_FILE = "#{ENV['HOME']}/.aws/config.yaml"
     # The config file we write out
-    OUT_FILE = ["#{ENV['HOME']}/.aws/config", "#{ENV['HOME']}/.aws/credentials"]
+    CONFIG_OUT_FILE = "#{ENV['HOME']}/.aws/config"
+    CREDENTIALS_OUT_FILE = "#{ENV['HOME']}/.aws/credentials"
     SESSION_CREDS_FILE = "#{ENV['HOME']}/.aws/session.yaml"
     SESSION_DURATION = 86400
     ROLE_DURATION = 3600
@@ -36,9 +37,8 @@ module AwsRoleCreds
         region = p['region'] || REGION
         duration = p['duration'] || SESSION_DURATION
         if @session_credentials.key?(name)
-            break if @session_credentials[name]['expiration'] > Time.now 
+            next if @session_credentials[name]['expiration'] > Time.now 
         end
-        puts "#{name}"
         
         if p['id'] and p['key']
             client = Aws::STS::Client.new(
@@ -114,38 +114,49 @@ module AwsRoleCreds
 
     # Write out config file
     # first make a backup
-    OUT_FILE.each do |o|
-        FileUtils.cp( o, "#{o}.backup" )
 
-        # create a new ini file object
-        config = IniFile.new
-        config.filename = o
+    FileUtils.cp( CONFIG_OUT_FILE, "#{CONFIG_OUT_FILE}.backup" )
+    FileUtils.cp( CREDENTIALS_OUT_FILE, "#{CREDENTIALS_OUT_FILE}.backup" )
 
-        config['default'] = { "region" => REGION }
+    # create a new ini file object
+    config = IniFile.new
+    config.filename = CONFIG_OUT_FILE
 
-        # set properties
-        @session_credentials.each do |k, c|
-            config["profile #{k}"] = {
-                "aws_access_key_id" => "#{c['access_key_id']}",
-                "aws_secret_access_key" => "#{c['secret_access_key']}",
-                "aws_security_token" => "#{c['session_token']}",
-                "region" => "#{c['region']}",
-            }
-            puts "Profile #{k} created"
-        end
+    credentials = IniFile.new
+    credentials.filename = CREDENTIALS_OUT_FILE
 
-        @role_credentials.each do |k, c|
-            config["profile #{k}"] = {
-                "aws_access_key_id" => "#{c['access_key_id']}",
-                "aws_secret_access_key" => "#{c['secret_access_key']}",
-                "aws_security_token" => "#{c['session_token']}",
-                "region" => "#{c['region']}",
-            }
-            puts "Profile #{k} created for role #{c['role']}"
-        end
+    config['default'] = { "region" => REGION }
 
-        # save file
-        config.write()
+    # set properties
+    @session_credentials.each do |k, c|
+        profile = {
+            "aws_access_key_id" => "#{c['access_key_id']}",
+            "aws_secret_access_key" => "#{c['secret_access_key']}",
+            "aws_security_token" => "#{c['session_token']}",
+            "region" => "#{c['region']}",
+        }
+        
+        config["profile #{k}"] = profile
+        credentials["#{k}"] = profile
     end
+
+    @role_credentials.each do |k, c|
+        profile = {
+            "aws_access_key_id" => "#{c['access_key_id']}",
+            "aws_secret_access_key" => "#{c['secret_access_key']}",
+            "aws_security_token" => "#{c['session_token']}",
+            "region" => "#{c['region']}",
+        }
+        
+        config["profile #{k}"] = profile
+        credentials["#{k}"] = profile
+    end
+
+    # save file
+    config.write()
+    puts "#{CONFIG_OUT_FILE} updated"
+    credentials.write()
+    puts "#{CREDENTIALS_OUT_FILE} updated"
+
 
 end
