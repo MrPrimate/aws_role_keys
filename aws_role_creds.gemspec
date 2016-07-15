@@ -1,11 +1,10 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'aws_role_creds/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "aws_role_creds"
-  spec.version       = AwsRoleCreds::VERSION
+  spec.version       = "0.0.4"
   spec.authors       = ["Jack Thomas"]
   spec.email         = ["jackdavidthomas@gmail.com"]
 

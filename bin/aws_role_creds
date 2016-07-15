@@ -1,2 +1,45 @@
 #!/usr/bin/env ruby
+require 'optparse'
+require 'logger'
 require 'aws_role_creds'
+
+options = {}
+optparse = OptionParser.new do |opts|
+
+    options[:in_config] = "#{ENV['HOME']}/.aws/config.yaml"
+    opts.on('-c', '--config file', 'Config file.') do |c|
+        options[:config] = c
+    end
+    
+    options[:out_config] = "#{ENV['HOME']}/.aws/config"
+    opts.on('--out-config file', 'AWS config file to use') do |c|
+        options[:out_config] = c
+    end
+
+    options[:cred_config] = "#{ENV['HOME']}/.aws/credentials"
+    opts.on('--credentials-out file', 'AWS credentials file to use') do |c|
+        options[:cred_config] = c
+    end
+
+    options[:debug] = false
+    opts.on('-d', '--debug', 'Enable debugging') do
+        options[:debug] = true
+    end
+
+end
+
+optparse.parse!
+log = Logger.new(STDERR)
+
+if options[:debug]
+    log.level = Logger::DEBUG
+else
+    log.level = Logger::INFO
+end
+
+
+arc = AwsRoleCreds.new( :config_in_file => options[:in_config],
+                        :config_out_file => options[:out_config],
+                        :credentials_out_file => options[:cred_config], 
+                        :logger => log)
+arc.run()
