@@ -157,7 +157,7 @@ class AwsRoleCreds
             profile = {
                 "aws_access_key_id" => "#{c['access_key_id']}",
                 "aws_secret_access_key" => "#{c['secret_access_key']}",
-                "aws_security_token" => "#{c['session_token']}",
+                "aws_session_token" => "#{c['session_token']}",
                 "region" => "#{c['region']}",
             }
             
@@ -169,7 +169,7 @@ class AwsRoleCreds
             profile = {
                 "aws_access_key_id" => "#{c['access_key_id']}",
                 "aws_secret_access_key" => "#{c['secret_access_key']}",
-                "aws_security_token" => "#{c['session_token']}",
+                "aws_session_token" => "#{c['session_token']}",
                 "region" => "#{c['region']}",
             }
             
