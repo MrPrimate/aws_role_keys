@@ -177,6 +177,26 @@ class AwsRoleCreds
             credentials["#{k}"] = profile
         end
 
+        exist_optional_configs = [
+            'region',
+            'mfa_serial',
+            'role_arn',
+            'source_profile',
+            'external_id',
+            'role_session_name',
+        ]
+        @config['exists'].each do |p|
+            profile = {
+                "aws_access_key_id" => "#{p['id']}",
+                "aws_secret_access_key" => "#{p['key']}",
+            }
+            exist_optional_configs.each do |i|
+                profile[i] = p[i] if p.key?(i)
+            end
+            config["profile #{p['name']}"] = profile
+            credentials["#{p['name']}"] = profile
+        end
+
         # save file
         config.write()
         @log.debug "#{config_out_file} updated"
