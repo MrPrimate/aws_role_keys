@@ -8,6 +8,11 @@ It can get frustrating managing so many accounts. If you have one (or even more)
 handle generating profiles and temporary session credentials, and keeping your
 MFA logins to a minimum.
 
+
+You might also be interested in
+[aws-assume-role](https://github.com/scalefactory/aws-assume-role) to store
+credentials securely in Gnome or OSX Keychain.
+
 ## Installation
 
 Install with
