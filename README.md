@@ -1,5 +1,7 @@
 # AwsRoleCreds
 
+*PLEASE DON'T USE THIS, CONSIDER aws-vault*
+
 Have several AWS accounts that you access through delegation? Want a id/key
 combo for each one? Need to use MFA? But want to use the cli?
 
